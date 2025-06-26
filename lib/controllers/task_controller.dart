@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_app_flutter/config/notifications.dart';
 import 'package:todo_app_flutter/models/task_model.dart';
@@ -26,7 +27,7 @@ class TaskController extends GetxController {
     sortTasks();
   }
 
-  Future<void> addTask(Task task) async {
+  Future<void> addTask(Task task, {BuildContext? context}) async {
     final newTask = Task(
       id: const Uuid().v4(),
       title: task.title,
@@ -40,18 +41,18 @@ class TaskController extends GetxController {
     tasks.add(newTask);
     filterAndSortTasks();
     if (newTask.reminder) {
-      await _scheduleReminder(newTask);
+      await _scheduleReminder(newTask, context);
     }
   }
 
-  Future<void> updateTask(Task updatedTask) async {
+  Future<void> updateTask(Task updatedTask, {BuildContext? context}) async {
     await _taskService.updateTask(updatedTask);
     final index = tasks.indexWhere((t) => t.id == updatedTask.id);
     if (index != -1) {
       tasks[index] = updatedTask;
       filterAndSortTasks();
       if (updatedTask.reminder) {
-        await _scheduleReminder(updatedTask);
+        await _scheduleReminder(updatedTask, context);
       } else {
         await _notificationService.cancelNotification(updatedTask.id.hashCode);
       }
@@ -108,22 +109,16 @@ class TaskController extends GetxController {
     List<Task> result = tasks;
     if (searchQuery.value.isNotEmpty) {
       result = result
-          .where(
-            (task) =>
-                task.title.toLowerCase().contains(
-                  searchQuery.value.toLowerCase(),
-                ) ||
-                (task.description.toLowerCase().contains(
-                  searchQuery.value.toLowerCase(),
-                )),
-          )
+          .where((task) =>
+              task.title.toLowerCase().contains(searchQuery.value.toLowerCase()) ||
+              (task.description.toLowerCase().contains(searchQuery.value.toLowerCase())))
           .toList();
     }
     filteredTasks.assignAll(result);
     sortTasks();
   }
 
-  Future<void> _scheduleReminder(Task task) async {
+  Future<void> _scheduleReminder(Task task, BuildContext? context) async {
     final reminderTime = task.dueDate.subtract(const Duration(hours: 1));
     if (reminderTime.isAfter(DateTime.now())) {
       await _notificationService.scheduleNotification(
@@ -131,6 +126,7 @@ class TaskController extends GetxController {
         task.title,
         'Due in 1 hour: ${task.description}',
         reminderTime,
+        context: context,
       );
     }
   }

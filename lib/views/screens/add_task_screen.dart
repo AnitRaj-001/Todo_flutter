@@ -27,11 +27,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task?.title ?? '');
-    _descriptionController = TextEditingController(
-      text: widget.task?.description ?? '',
-    );
-    _dueDate =
-        widget.task?.dueDate ?? DateTime.now().add(const Duration(days: 1));
+    _descriptionController = TextEditingController(text: widget.task?.description ?? '');
+    _dueDate = widget.task?.dueDate ?? DateTime.now().add(const Duration(days: 1));
     _priority = widget.task?.priority ?? 'Medium';
     _reminder = widget.task?.reminder ?? false;
   }
@@ -74,17 +71,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
       final task = Task(
         id: widget.task?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         title: _titleController.text,
-        description: _descriptionController.text.isEmpty
-            ? ''
-            : _descriptionController.text,
+        description: _descriptionController.text.isEmpty ? '' : _descriptionController.text,
         dueDate: _dueDate,
         priority: _priority,
         reminder: _reminder,
         createdAt: widget.task?.createdAt ?? DateTime.now(),
       );
       widget.task == null
-          ? _controller.addTask(task)
-          : _controller.updateTask(task);
+          ? _controller.addTask(task, context: context)
+          : _controller.updateTask(task, context: context);
       Get.back();
     }
   }
@@ -93,7 +88,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Widget build(BuildContext context) {
     ScreenUtil.init(context, designSize: const Size(360, 690));
     return Container(
-       decoration: BoxDecoration(
+      decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.blue.shade50, Colors.purple.shade50],
             begin: Alignment.topCenter,
@@ -105,11 +100,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
         appBar: AppBar(
           title: Text(
             widget.task == null ? 'Add Task' : 'Edit Task',
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+            style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           centerTitle: true,
           backgroundColor: Colors.transparent,
@@ -134,8 +125,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   _buildTextField(
                     controller: _titleController,
                     label: 'Title',
-                    validator: (value) =>
-                        value!.isEmpty ? 'Please enter a title' : null,
+                    validator: (value) => value!.isEmpty ? 'Please enter a title' : null,
                     animationDelay: 0,
                   ),
                   SizedBox(height: 16.h),
@@ -157,13 +147,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                       onPressed: _saveTask,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 32.w,
-                          vertical: 12.h,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 32.w, vertical: 12.h),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
                         elevation: 5,
                       ),
                       child: Text(
@@ -196,16 +181,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Colors.blue, width: 1.w),
           boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              offset: Offset(4.w, 4.h),
-              blurRadius: 8.r,
-            ),
-            BoxShadow(
-              color: Colors.white,
-              offset: Offset(-4.w, -4.h),
-              blurRadius: 8.r,
-            ),
+            BoxShadow(color: Colors.grey.shade300, offset: Offset(4.w, 4.h), blurRadius: 8.r),
+            BoxShadow(color: Colors.white, offset: Offset(-4.w, -4.h), blurRadius: 8.r),
           ],
         ),
         child: TextFormField(
@@ -215,10 +192,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             labelStyle: TextStyle(fontSize: 16.sp, color: Colors.grey.shade600),
             floatingLabelBehavior: FloatingLabelBehavior.never,
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 12.h,
-            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           ),
           style: TextStyle(fontSize: 16.sp),
           maxLines: maxLines ?? 1,
@@ -237,16 +211,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Colors.blue, width: 1.w),
           boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              offset: Offset(4.w, 4.h),
-              blurRadius: 8.r,
-            ),
-            BoxShadow(
-              color: Colors.white,
-              offset: Offset(-4.w, -4.h),
-              blurRadius: 8.r,
-            ),
+            BoxShadow(color: Colors.grey.shade300, offset: Offset(4.w, 4.h), blurRadius: 8.r),
+            BoxShadow(color: Colors.white, offset: Offset(-4.w, -4.h), blurRadius: 8.r),
           ],
         ),
         child: DropdownButtonFormField<String>(
@@ -256,10 +222,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
             labelStyle: TextStyle(fontSize: 16.sp, color: Colors.grey.shade600),
             floatingLabelBehavior: FloatingLabelBehavior.never,
             border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: 16.w,
-              vertical: 12.h,
-            ),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
           ),
           style: TextStyle(fontSize: 16.sp, color: Colors.black87),
           items: ['Low', 'Medium', 'High'].map((priority) {
@@ -283,16 +246,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Colors.blue, width: 1.w),
           boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              offset: Offset(4.w, 4.h),
-              blurRadius: 8.r,
-            ),
-            BoxShadow(
-              color: Colors.white,
-              offset: Offset(-4.w, -4.h),
-              blurRadius: 8.r,
-            ),
+            BoxShadow(color: Colors.grey.shade300, offset: Offset(4.w, 4.h), blurRadius: 8.r),
+            BoxShadow(color: Colors.white, offset: Offset(-4.w, -4.h), blurRadius: 8.r),
           ],
         ),
         child: ListTile(
@@ -318,16 +273,8 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: Colors.blue, width: 1.w),
           boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade300,
-              offset: Offset(4.w, 4.h),
-              blurRadius: 8.r,
-            ),
-            BoxShadow(
-              color: Colors.white,
-              offset: Offset(-4.w, -4.h),
-              blurRadius: 8.r,
-            ),
+            BoxShadow(color: Colors.grey.shade300, offset: Offset(4.w, 4.h), blurRadius: 8.r),
+            BoxShadow(color: Colors.white, offset: Offset(-4.w, -4.h), blurRadius: 8.r),
           ],
         ),
         child: SwitchListTile(
